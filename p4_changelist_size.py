@@ -2,13 +2,15 @@ import sys
 import os
 import configparser
 import time
+from pathlib import Path
 
 import P4
 
 MEGABIT_SIZE = 1048576
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read(Path(__file__).parent / "config.ini")
+speed = config["DEFAULT"].getfloat("UploadSpeed_Mbps")
 
 p4 = P4.P4()
 p4.connect()
@@ -34,7 +36,10 @@ def main():
 	print("________________________________________")
 	print(f"File Count: {len(cl_files)}")
 	print(f"Total Size: {convert_bytes_to_human_readable(total_size)}")
-	print(f"Estimated Upload Time: {convert_second_to_human_readable(estimate_upload_time_in_seconds(total_size))}")
+	print(
+		f"Estimated Upload Time: {convert_second_to_human_readable(estimate_upload_time_in_seconds(total_size))}"
+	)
+
 
 def get_depot_paths_by_cl(changelist):
 	all_opened = p4.run_opened()
@@ -46,8 +51,8 @@ def get_depot_paths_by_cl(changelist):
 
 def estimate_upload_time_in_seconds(total_size):
 	size_in_bits = total_size * 8
-	speed_in_bits = config.getfloat("UploadSpeed_Mbps") * MEGABIT_SIZE
-	return = size_in_bits / speed_in_bits
+	speed_in_bits = speed * MEGABIT_SIZE
+	return size_in_bits / speed_in_bits
 
 
 def convert_second_to_human_readable(seconds):
