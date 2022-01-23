@@ -4,7 +4,7 @@ Small script to check the size of a Perforce changelist and give a rough approxi
 > Note:
    Estimates of how long it will take to submit are *very* approximate and should not be relied on for anything critical. Varying internet traffic, server load, number of files in a changelist, and number of parallel threads can all affect the actual time it takes to submit.
 
-This script can be setup to run as a [right-click menu item in P4V](#p4v-setup) or as a [command line tool](#command-line-usage).
+This script can be setup to run as a [right-click menu item in P4V](#P4V-Setup-and-Usage) or as a [command line tool](#Command-Line-Usage).
 
 ## Pre-requisites
 You must have the P4 command line client installed and have a Perforce server running.
@@ -21,7 +21,7 @@ You can install these modules using the following command from the p4_changelist
 
       pip install -r requirements.txt
 
-## P4V Setup and Usage {#p4v-setup}
+## P4V Setup and Usage
 1. In p4v, go to `Tools` -> `Manage Tools` -> `Custom Tools`
    ![Open Tool Menu](help_files/images/Open_Tools_Menu.png)
 2. In the Custom Tools Window, select `New` -> `Tool...`
@@ -38,7 +38,7 @@ You can install these modules using the following command from the p4_changelist
 5. This will pop up a terminal window that will list all files in the selected changelist and their size. At the bottom it will list the total file count, total size of all the files in the changelist, and an estimate of upload time.
    ![Example Output](help_files/images/Example_Output.png)
 
-## Command Line Usage {#command-line-usage}
+## Command Line Usage
 `p4_changelist_size` works like the p4 command line in that it will look in the current working directory for a config file path that matches your P4CONFIG setting or will use your default settings if none is found. (Be sure to check this is you are getting results for the wrong server or depot)
 
 ### Using the EXE file
