@@ -3,20 +3,22 @@ import os
 import configparser
 import time
 from pathlib import Path
-from turtle import speed
 from typing import List, Tuple
-import speedtest
 
+from appdirs import user_config_dir
+import speedtest
 import P4
 
 MEGABIT_SIZE = 1048576
-
+CONFIG_PATH = Path(user_config_dir("p4_changelist_size")) / "config.ini"
+CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 p4 = P4.P4()
 p4.connect()
 
 
 def main():
+    print(f"Config file location: {CONFIG_PATH}\n")
     speed_mbps = get_upload_speed()
 
     changelist = sys.argv[1]
@@ -37,7 +39,7 @@ def main():
 def get_upload_speed() -> float:
     """Return the upload speed_mbps."""
     config = configparser.ConfigParser()
-    config.read(Path(__file__).parent / "config.ini")
+    config.read(CONFIG_PATH)
     try:
         speed_mbps = config["CONNECTION"].getfloat("UploadSpeed_Mbps")
     except KeyError:
@@ -46,17 +48,19 @@ def get_upload_speed() -> float:
     except ValueError:
         speed_mbps = None
     if not speed_mbps:
-        while True:
-            has_manual_speed = input(
-                (
-                    "Upload speed not found in config.ini\n"
-                    "If you are connecting to your Helix Core server via standard internet,\n"
-                    "press REPLY button to automatically test your internet connection speed.\n"
-                    "If you are connecting to your Helix Core server via local LAN network\n"
-                    "enter your LAN speed in Mbps below and then click REPLY\n"
-                    "(If you aren't sure of your LAN speed, 1000 is a safe bet).\n"
-                )
+        print(
+            (
+                "______ First Time Setup ______\n"
+                "Upload speed needs to be set for time estimates.\n\n"
+                "If you are connecting to your Helix Core server via standard internet:\n"
+                "Press REPLY button to automatically test your internet connection speed.\n\n"
+                "If you are connecting to your Helix Core server via local LAN network:\n"
+                "Enter your LAN speed in Mbps below and then click REPLY\n"
+                "(If you aren't sure of your LAN speed, 1000 is a safe bet)."
             )
+        )
+        while True:
+            has_manual_speed = input()
             if not has_manual_speed:
                 speed_mbps = test_internet_speed()
                 break
@@ -64,15 +68,18 @@ def get_upload_speed() -> float:
                 speed_mbps = float(has_manual_speed)
                 break
             except ValueError:
-                print("Please enter a number only:")
+                print(
+                    "ERROR: Please enter the NUMBER of megabits per second (As an integer or float)\n"
+                    "Or leave blank to auto-test your internet speed."
+                )
         config["CONNECTION"]["UploadSpeed_Mbps"] = f"{speed_mbps:.2f}"
-        with open(Path(__file__).parent / "config.ini", "w") as configfile:
+        with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)
     return speed_mbps
 
 
 def test_internet_speed() -> float:
-    print("Testing internet speed. This will take a few seconds...")
+    print("Testing internet speed. This will take a few seconds...", flush=True)
     s = speedtest.Speedtest()
     s.upload()
     speed_mbps = s.results.upload / MEGABIT_SIZE

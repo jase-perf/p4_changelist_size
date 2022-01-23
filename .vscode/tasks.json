@@ -6,7 +6,7 @@
         {
             "label": "Build and Package Python as EXE",
             "type": "shell",
-            "command": "pyinstaller --distpath bin --clean --onefile ${file}",
+            "command": ".env/Scripts/pyinstaller --distpath bin --clean --onefile ${file}",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

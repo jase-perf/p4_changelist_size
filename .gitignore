@@ -130,3 +130,4 @@ dmypy.json
 .vscode/launch.json
 temp.py
 .p4config
+config.ini
